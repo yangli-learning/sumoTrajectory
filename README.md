@@ -1,7 +1,7 @@
 Trajectory generation using SUMO
 ================================
 
-----------
+
 ### Content ###
 
 Directories
@@ -12,9 +12,9 @@ Directories
 - `junction_flows/`: simulation data using manually defiend flows on real maps
 
 Files
-- `DAR_TRAJGEN.sh`: run trajectory generation pipeline (obsolete)
-- `TRAJGEN.sh`: run trajectory generation pipeline (obsolete)
+- `run_interactive.sh`: interactive Bash script for trajectory generation 
 - `csv2Route.py`: convert csv flow file to sumo flow xml file
+- `visualize_route.py`: visualize SUMO generated routes 
 - `settings.xml`: common setting file for all sumo simulation
 
 ----------

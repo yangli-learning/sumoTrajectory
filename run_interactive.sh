@@ -8,6 +8,7 @@ FCD2PBF=../fcd2pbf/build/src/exec/fcd2pbf
 
 # optional: convert trajectories to txt format
 #PROCESSPBF=../processpbf/build/src/exec/processpbf
+PROCESSPBF=0
 DISP_ROUTES=1
 ######################################################
 

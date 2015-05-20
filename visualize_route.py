@@ -6,7 +6,7 @@ import sys
 import os.path
 
 def usage():
-    print "Usage: python visualize_route.py <net_file> <flow_file>\n"
+    print "Usage: python visualize_route.py <net_file> <flow_file> [img_fname]\n"
 
 def readSumoNetwork(fname):
 
@@ -34,7 +34,7 @@ def readRouteFile(fname):
             
     return routes
 
-def plotRoutes(roads, routes):
+def plotRoutes(roads, routes,fname):
     plt.figure(1)
     for r,edgeids in routes.iteritems():
         
@@ -43,11 +43,12 @@ def plotRoutes(roads, routes):
 
         plt.plot(xs, ys)
     plt.show()
+    plt.savefig('route-img.png')
 
 def plotRoutesGrid(roads, routes):
     plt.figure(2)
     n = len(routes)
-    h = np.sqrt(n)
+    h = np.ceil(np.sqrt(n))
     w = np.ceil(n/h)
     i=0
     ax = plt.subplot(h, w, 0, aspect='equal')
@@ -74,6 +75,7 @@ def main():
     if (len(sys.argv) >2):
         net_fname = sys.argv[1]
         route_fname = sys.argv[2]
+        img_fname = sys.argv[3] if (len(sys.argv)>3) else "routes.png"
     else:
         usage()
         exit(0)
@@ -81,7 +83,7 @@ def main():
     routes = readRouteFile(route_fname)
     roads = readSumoNetwork(net_fname)
     #print roads[:5]
-    plotRoutes(roads,routes)
+    plotRoutes(roads,routes,img_fname)
     plotRoutesGrid(roads,routes)
 
 if __name__ == "__main__":

@@ -150,7 +150,9 @@ read_route()
 	    flow_2_route 
 	    [ $? -eq 1 ] && return 1
 	    if [ $DISP_ROUTES -eq 1 ]; then
-		python visualize_route.py $netname $routename
+	    	local imgname="${csvname%.*}.png"	
+			python visualize_route.py $netname $routename $imgname
+    		echo "Saved route preview image in ${imgname}"
 	    fi
 	    ;;
     esac
@@ -201,7 +203,8 @@ for f in $networkpath; do
 	fcd2pdf 15 3
 	# generate trajectories with subsample 20, noise 4
 	fcd2pdf 20 4
-
+	# generate trajectories with subsample 30, noise 5
+	fcd2pdf 30 5
 	# if $PROCESSPBF binary is defined, convert trajectories to txt
 	if [ -f ${PROCESSPBF} ];then
 	    pbf2txt 

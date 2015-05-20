@@ -158,8 +158,10 @@ read_route()
     return 0
 }
 
-# execute
-
+################### execute script ######################
+echo "*******************************************************"
+echo "* Interactive script for generating sumo trajectories *"
+echo "*******************************************************"
 read -e -p "Enter network file path: " networkpath
 echo
 

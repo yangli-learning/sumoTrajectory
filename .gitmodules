@@ -1,0 +1,3 @@
+[submodule "cleandata"]
+	path = cleandata
+	url = git@github.com:yangli1-stanford/sumoTrajectoryData.git

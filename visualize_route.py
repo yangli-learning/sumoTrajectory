@@ -42,8 +42,9 @@ def plotRoutes(roads, routes,fname):
         ys  = sum([ roads[e][1] for e in edgeids],[])
 
         plt.plot(xs, ys)
+    fig = plt.gcf()
+    fig.savefig(fname)
     plt.show()
-    plt.savefig('route-img.png')
 
 def plotRoutesGrid(roads, routes):
     plt.figure(2)
@@ -51,10 +52,10 @@ def plotRoutesGrid(roads, routes):
     h = np.ceil(np.sqrt(n))
     w = np.ceil(n/h)
     i=0
-    ax = plt.subplot(h, w, 0, aspect='equal')
+    ax = plt.subplot(h, w,1, aspect='equal')
     for r,edgeids in routes.iteritems():
         if (i!= 0) : 
-            a = plt.subplot(h, w, i)
+            a = plt.subplot(h, w, i+1)
             a.set_title("Route %s\n%s,%s" % (r,edgeids[0], edgeids[-1]))
             plt.setp(a.get_xticklabels() , visible=False)
             plt.setp(a.get_yticklabels() , visible=False)

@@ -6,10 +6,16 @@
 # path to fcd2pbf binary 
 FCD2PBF=../fcd2pbf/build/src/exec/fcd2pbf
 
+# location to store output 
+OUTPUT_ROOT=cleandata
+
 # optional: convert trajectories to txt format
 #PROCESSPBF=../processpbf/build/src/exec/processpbf
 PROCESSPBF=0
+
+# flag to preview routes
 DISP_ROUTES=1
+
 ######################################################
 
 
@@ -159,8 +165,28 @@ read_route()
     echo "[Route file is set to $routename]"
     return 0
 }
-
-################### execute script ######################
+move_output()
+{
+	# move all intermediate files to output directory
+	echo 
+    echo "Enter output directory"
+    defaultDir="${OUTPUT_ROOT}/${cfgname%.*}/"
+    read -e -p "(Press [Enter] to use $defaultDir): " output_dir
+    output_dir=${output_dir:-$defaultDir}
+	if [ ! -d $output_dir ]; then
+		echo "Creating output directory ${output_dir}"
+		mkdir -p $output_dir;
+		if [ ! -d $output_dir ]; then
+			return 1
+		fi
+	fi
+	# move all pbf files, lane files,  
+	files=$(find . -maxdepth 1 -type f -name "${cfgname%.*}*")
+	mv -v $files $output_dir
+	echo "[Moved output files to $output_dir]"
+	return 0
+}
+################### execute script ##############################
 echo "*******************************************************"
 echo "* Interactive script for generating sumo trajectories *"
 echo "*******************************************************"
@@ -170,48 +196,54 @@ echo
 
 for f in $networkpath; do
     if [ -f $f ]; then
-	echo "Found file $f "
-	filename=$(basename "$f")
-	ext="${filename##*.}"
-	fname="${filename%.*}"
-	if [ "$ext" == "osm" ]; then
-	    netname="${fname}.net.xml"
-	    echo "converting to SUMO network file ${netname}..."
-	    netconvert --osm-files $f -o $netname
+		echo "Found file $f "
+		filename=$(basename "$f")
+		ext="${filename##*.}"
+		fname="${filename%.*}"
+		if [ "$ext" == "osm" ]; then
+		    netname="${fname}.net.xml"
+		    echo "converting to SUMO network file ${netname}..."
+		    netconvert --osm-files $f -o $netname
 
-	else
-	    if [ "$ext" == "xml" ]; then
-		netname=$f
+		else
+		    if [ "$ext" == "xml" ]; then
+				netname=$f
 
-	    else
-		echo "Error: file $filename has invalid extension! "
-		continue
-	    fi
+		    else
+				echo "Error: file $filename has invalid extension! "
+				continue
+		    fi
 
-	fi
-	echo "[Network file is set to ${netname}]"
-	read_route
-	
-	[ $? -eq 1 ] && continue
-	write_config
-	run_sumo
-	[ $? -eq 1 ] && continue
+		fi
+		echo "[Network file is set to ${netname}]"
+		read_route
+		
+		[ $? -eq 1 ] && continue
+		write_config
+		run_sumo
+		[ $? -eq 1 ] && continue
 
-	# generate dense trajectories 
-	fcd2pdf 
-	# generate trajectories with subsample 15, noise 3
-	fcd2pdf 15 3
-	# generate trajectories with subsample 20, noise 4
-	fcd2pdf 20 4
-	# generate trajectories with subsample 30, noise 5
-	fcd2pdf 30 5
-	# if $PROCESSPBF binary is defined, convert trajectories to txt
-	if [ -f ${PROCESSPBF} ];then
-	    pbf2txt 
-	fi
-	echo "Success!"
+		# generate dense trajectories 
+		fcd2pdf 
+		# generate trajectories with subsample 15, noise 3
+		fcd2pdf 15 3
+		# generate trajectories with subsample 20, noise 4
+		fcd2pdf 20 4
+		# generate trajectories with subsample 30, noise 5
+		fcd2pdf 30 5
+		# if $PROCESSPBF binary is defined, convert trajectories to txt
+		if [ -f ${PROCESSPBF} ];then
+		    pbf2txt 
+		fi
+		# move files to output directory
+		move_output
+		if [ $? -eq 0 ];then
+			echo "Success!"
+		else
+			echo "Error moving files!"
+		fi
     else
-	echo "Error: can not read file $f!"
+		echo "Error: can not read file $f!"
     fi
 done
 # if ext = osm, convert osm to xml, otherwise continue
